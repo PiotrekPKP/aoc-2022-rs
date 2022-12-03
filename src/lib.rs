@@ -3,6 +3,7 @@ use std::fs;
 
 pub struct AdventOfCode {
     day: u8,
+    year: u16,
     pub lines: Vec<String>,
     pub content: String,
 }
@@ -21,6 +22,7 @@ impl AdventOfCode {
         return AdventOfCode {
             lines,
             day,
+            year,
             content: input,
         };
     }
@@ -32,8 +34,10 @@ impl AdventOfCode {
     {
         println!();
         println!(
-            "---------- {}",
-            format!("DAY {:02}", &self.day).on_bright_green().black()
+            "----- {}",
+            format!("DAY {:02} / {}", &self.day, &self.year)
+                .on_bright_green()
+                .black()
         );
         println!("First part:  {}", format!("{:?}", first_part).yellow());
         println!("Second part: {}", format!("{:?}", second_part).yellow());
@@ -45,6 +49,6 @@ pub fn debug<T>(value: T)
 where
     T: std::fmt::Debug,
 {
-    println!("------- {}", "DEBUGGING".on_bright_red().black());
+    println!("----- {}", "DEBUGGING".on_bright_red().black());
     println!("{:?}", value);
 }
