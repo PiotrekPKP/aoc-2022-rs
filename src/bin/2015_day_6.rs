@@ -74,7 +74,7 @@ struct Board1 {
 
 #[derive(Debug)]
 struct Board2 {
-    lights: [[u16; ELEMENTS]; ELEMENTS],
+    lights: [[u8; ELEMENTS]; ELEMENTS],
 }
 
 impl Board1 {
