@@ -6,9 +6,9 @@ fn main() {
 
     let day = env::args()
         .nth(1)
-        .unwrap()
+        .expect("You have to provide a day!")
         .parse::<u32>()
-        .expect("You have to provide a day!");
+        .expect("The day has an incorrect format.");
 
     const DEFAULT_YEAR: u32 = 2022;
 
