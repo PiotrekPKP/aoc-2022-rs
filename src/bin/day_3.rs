@@ -62,5 +62,5 @@ fn main() {
         })
         .sum::<u32>();
 
-    aoc.output(first_part, second_part)
+    aoc.output(first_part, second_part);
 }

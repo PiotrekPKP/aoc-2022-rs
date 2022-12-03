@@ -28,5 +28,5 @@ fn main() {
 
     let second_part = second_part_vec.iter().take(3).sum::<u32>();
 
-    aoc.output(first_part, second_part)
+    aoc.output(first_part, second_part);
 }
