@@ -4,6 +4,7 @@ use std::fs;
 pub struct AdventOfCode {
     day: u8,
     pub lines: Vec<String>,
+    pub content: String,
 }
 
 impl AdventOfCode {
@@ -12,11 +13,16 @@ impl AdventOfCode {
         let input = fs::read_to_string(input).unwrap();
 
         let lines = input
+            .clone()
             .lines()
             .map(|line| line.to_string())
             .collect::<Vec<String>>();
 
-        return AdventOfCode { lines, day };
+        return AdventOfCode {
+            lines,
+            day,
+            content: input,
+        };
     }
 
     pub fn output<T, Z>(&self, first_part: T, second_part: Z)
