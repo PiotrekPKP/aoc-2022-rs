@@ -43,6 +43,7 @@ fn main() {
         return;
     }
 
+    fs::create_dir_all(format!("./src/input/{}", year)).unwrap();
     let path = format!("./src/input/{}/day_{}.txt", year, day);
     fs::write(path, res.trim_end()).expect("Failed to save data!");
 
