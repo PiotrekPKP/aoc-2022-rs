@@ -1,0 +1,1 @@
+cargo run --bin=${2:-2022}_day_$1
