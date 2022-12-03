@@ -1,3 +1,4 @@
+use colored::Colorize;
 use std::fs;
 
 pub struct AdventOfCode {
@@ -18,10 +19,26 @@ impl AdventOfCode {
         return AdventOfCode { lines, day };
     }
 
-    pub fn output(&self, first_part: u32, second_part: u32) {
-        println!("---------- DAY {:02}", &self.day);
-        println!("First part:  {:?}", first_part);
-        println!("Second part: {:?}", second_part);
+    pub fn output<T, Z>(&self, first_part: T, second_part: Z)
+    where
+        T: std::fmt::Debug,
+        Z: std::fmt::Debug,
+    {
+        println!();
+        println!(
+            "---------- {}",
+            format!("DAY {:02}", &self.day).on_bright_green().black()
+        );
+        println!("First part:  {}", format!("{:?}", first_part).yellow());
+        println!("Second part: {}", format!("{:?}", second_part).yellow());
         println!();
     }
+}
+
+pub fn debug<T>(value: T)
+where
+    T: std::fmt::Debug,
+{
+    println!("------- {}", "DEBUGGING".on_bright_red().black());
+    println!("{:?}", value);
 }
