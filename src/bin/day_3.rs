@@ -2,12 +2,11 @@ use aoc::*;
 use std::collections::HashSet;
 
 fn main() {
-    init(3);
+    let aoc = AdventOfCode::new(3);
 
-    let input = include_str!("./input_3.txt");
-
-    let first_part = input
-        .lines()
+    let first_part = aoc
+        .lines
+        .iter()
         .map(|line| {
             let half = (line.len() as f64 / 2.).ceil();
 
@@ -34,9 +33,8 @@ fn main() {
         })
         .sum::<u32>();
 
-    let second_part = input
-        .lines()
-        .collect::<Vec<&str>>()
+    let second_part = aoc
+        .lines
         .chunks(3)
         .map(|group| {
             let first = group[0].chars().collect::<Vec<char>>();
@@ -64,5 +62,5 @@ fn main() {
         })
         .sum::<u32>();
 
-    output(first_part, second_part);
+    aoc.output(first_part, second_part)
 }
