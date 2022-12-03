@@ -7,10 +7,9 @@ fn main() {
         .content
         .split("\n\n")
         .map(|elf| {
-            return elf
-                .lines()
+            elf.lines()
                 .flat_map(|line| line.parse::<u32>())
-                .sum::<u32>();
+                .sum::<u32>()
         })
         .max()
         .unwrap();
@@ -19,10 +18,9 @@ fn main() {
         .content
         .split("\n\n")
         .map(|elf| {
-            return elf
-                .lines()
+            elf.lines()
                 .flat_map(|line| line.parse::<u32>())
-                .sum::<u32>();
+                .sum::<u32>()
         })
         .collect::<Vec<u32>>();
 
