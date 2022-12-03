@@ -9,3 +9,5 @@ path = "src/lib.rs"
 
 [dependencies]
 colored = "2.0.0"
+reqwest = { version = "0.11.13", features = ["blocking"] }
+dotenv = "0.15.0"

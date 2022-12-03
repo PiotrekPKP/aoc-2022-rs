@@ -82,7 +82,7 @@ fn get_figure(figure: &Figure, outcome: &Outcome) -> Figure {
 }
 
 fn main() {
-    let aoc = AdventOfCode::new(2);
+    let aoc = AdventOfCode::new(2, 2022);
 
     let first_part = aoc
         .lines

@@ -2,7 +2,7 @@ use aoc::*;
 use std::collections::HashSet;
 
 fn main() {
-    let aoc = AdventOfCode::new(3);
+    let aoc = AdventOfCode::new(3, 2022);
 
     let first_part = aoc
         .lines

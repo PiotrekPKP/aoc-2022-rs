@@ -1,7 +1,7 @@
 use aoc::*;
 
 fn main() {
-    let aoc = AdventOfCode::new(1);
+    let aoc = AdventOfCode::new(1, 2022);
 
     let first_part = aoc
         .content

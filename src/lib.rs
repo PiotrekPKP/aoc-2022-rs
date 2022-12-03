@@ -8,8 +8,8 @@ pub struct AdventOfCode {
 }
 
 impl AdventOfCode {
-    pub fn new(day: u8) -> Self {
-        let input = format!("./src/input/day_{}.txt", day);
+    pub fn new(day: u8, year: u16) -> Self {
+        let input = format!("./src/input/{}/day_{}.txt", year, day);
         let input = fs::read_to_string(input).unwrap();
 
         let lines = input
