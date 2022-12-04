@@ -6,12 +6,26 @@ pub struct AdventOfCode {
     year: u16,
     pub lines: Vec<String>,
     pub content: String,
+    pub test_lines: Option<Vec<String>>,
+    pub test_content: Option<String>,
 }
 
 impl AdventOfCode {
     pub fn new(day: u8, year: u16) -> Self {
         let input = format!("./src/input/{}/day_{}.txt", year, day);
         let input = fs::read_to_string(input).unwrap();
+
+        let test_input = format!("./src/input/{}/day_{}.test.txt", year, day);
+        let test_input = fs::read_to_string(test_input);
+
+        let test_lines = match &test_input {
+            Ok(t) => Some(t.lines().map(|x| x.to_string()).collect()),
+            Err(_) => None,
+        };
+        let test_content = match &test_input {
+            Ok(t) => Some(t.clone()),
+            Err(_) => None,
+        };
 
         let lines = input
             .clone()
@@ -24,6 +38,8 @@ impl AdventOfCode {
             day,
             year,
             content: input,
+            test_lines,
+            test_content,
         };
     }
 
