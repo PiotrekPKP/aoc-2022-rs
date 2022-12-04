@@ -45,7 +45,9 @@ fn main() {
 
     fs::create_dir_all(format!("./src/input/{}", year)).unwrap();
     let path = format!("./src/input/{}/day_{}.txt", year, day);
+    let test_path = format!("./src/input/{}/day_{}.test.txt", year, day);
     fs::write(path, res.trim_end()).expect("Failed to save data!");
+    fs::write(test_path, "").expect("Failed to save data!");
 
     generate_boilerplate(day, year);
 
