@@ -26,6 +26,7 @@ impl Program {
 
         crate_input.lines().for_each(|line| {
             let mut temp_line = String::from(line);
+
             while let Some(char_pos) = temp_line.chars().position(|c| c == '[') {
                 let index = determine_crate_placement(char_pos);
                 crates[index].push_back(temp_line.chars().nth(char_pos + 1).unwrap().to_string());
