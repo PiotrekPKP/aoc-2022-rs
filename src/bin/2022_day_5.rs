@@ -1,6 +1,5 @@
-use std::collections::VecDeque;
-
 use aoc::*;
+use std::collections::VecDeque;
 
 #[derive(Debug)]
 struct Action {
@@ -63,14 +62,12 @@ impl Program {
         self.actions.iter().for_each(|action| {
             let mut picked_up = vec![];
 
-            for _ in 0..action.amount {
+            (0..action.amount).for_each(|_| {
                 let value = self.crates[action.from as usize - 1].pop_front().unwrap();
                 picked_up.push(value);
-            }
+            });
 
-            picked_up.reverse();
-
-            picked_up.iter().for_each(|krate| {
+            picked_up.iter().rev().for_each(|krate| {
                 self.crates[action.to as usize - 1].push_front(krate.clone());
             });
         })
