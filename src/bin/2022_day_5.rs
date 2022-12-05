@@ -4,8 +4,8 @@ use std::collections::VecDeque;
 #[derive(Debug)]
 struct Action {
     amount: u32,
-    from: u8,
-    to: u8,
+    from: u32,
+    to: u32,
 }
 
 #[derive(Debug)]
@@ -36,12 +36,17 @@ impl Program {
         let actions = split[1]
             .lines()
             .map(|action_line| {
-                let splitted_action_line = action_line.split(" ").collect::<Vec<&str>>();
+                let splitted_action_line = action_line
+                    .split(" ")
+                    .enumerate()
+                    .filter(|(i, _)| i % 2 != 0)
+                    .flat_map(|(_, part)| part.parse())
+                    .collect::<Vec<u32>>();
 
                 return Action {
-                    amount: splitted_action_line[1].parse().unwrap(),
-                    from: splitted_action_line[3].parse().unwrap(),
-                    to: splitted_action_line[5].parse().unwrap(),
+                    amount: splitted_action_line[0],
+                    from: splitted_action_line[1],
+                    to: splitted_action_line[2],
                 };
             })
             .collect();
