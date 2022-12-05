@@ -94,7 +94,24 @@ fn determine_stack_amount(input: &String) -> usize {
 fn determine_crate_placement(char_pos: usize) -> usize {
     let new_position = char_pos - (char_pos as f32 / 4.).floor() as usize;
 
-    (new_position as f32 / 3.).floor() as usize
+    return (new_position as f32 / 3.).floor() as usize;
+}
+
+fn get_top_crates(crates: &Vec<VecDeque<String>>) -> String {
+    return crates
+        .iter()
+        .map(|crate_stack| {
+            crate_stack
+                .iter()
+                .nth(0)
+                .unwrap()
+                .chars()
+                .collect::<Vec<char>>()
+                .first()
+                .unwrap()
+                .clone()
+        })
+        .collect::<String>();
 }
 
 fn main() {
@@ -102,41 +119,11 @@ fn main() {
 
     let mut program = Program::new(&aoc.content);
     program.evaluate_1();
-
-    let first_part = program
-        .crates
-        .iter()
-        .map(|crate_stack| {
-            crate_stack
-                .iter()
-                .nth(0)
-                .unwrap()
-                .chars()
-                .collect::<Vec<char>>()
-                .first()
-                .unwrap()
-                .clone()
-        })
-        .collect::<String>();
+    let first_part = get_top_crates(&program.crates);
 
     let mut program = Program::new(&aoc.content);
     program.evaluate_2();
-
-    let second_part = program
-        .crates
-        .iter()
-        .map(|crate_stack| {
-            crate_stack
-                .iter()
-                .nth(0)
-                .unwrap()
-                .chars()
-                .collect::<Vec<char>>()
-                .first()
-                .unwrap()
-                .clone()
-        })
-        .collect::<String>();
+    let second_part = get_top_crates(&program.crates);
 
     aoc.output(first_part, second_part);
 }
