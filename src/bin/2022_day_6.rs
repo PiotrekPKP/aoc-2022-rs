@@ -2,18 +2,11 @@ use aoc::*;
 use std::collections::HashSet;
 
 fn check_for_repetition(input: &String, letters_in_a_row: usize) -> usize {
-    let chars = input.chars().collect::<Vec<char>>();
-
-    return chars
+    return input
+        .as_bytes()
         .windows(letters_in_a_row)
-        .enumerate()
-        .find(|(_i, letters)| {
-            let set = HashSet::<&char>::from_iter(letters.iter());
-
-            return set.len() == letters.len();
-        })
+        .position(|letters| letters.iter().collect::<HashSet<_>>().len() == letters_in_a_row)
         .unwrap()
-        .0
         + letters_in_a_row;
 }
 
