@@ -31,6 +31,9 @@ enum TerminalString {
     Element(Element),
 }
 
+const DISK_SIZE: u32 = 70000000;
+const MIN_UNUSED_SIZE: u32 = 30000000;
+
 fn parse_input_to_commands(lines: &Vec<String>) -> Vec<Command> {
     let mut output = lines
         .iter()
@@ -124,7 +127,7 @@ fn parse_input_to_commands(lines: &Vec<String>) -> Vec<Command> {
 fn main() {
     let aoc = AdventOfCode::new(7, 2022);
 
-    let elements = parse_input_to_commands(&aoc.test_lines.as_ref().unwrap())
+    let elements = parse_input_to_commands(&aoc.lines)
         .iter()
         .flat_map(|command| match command {
             Command::ChangeDir(_) => None,
@@ -141,7 +144,7 @@ fn main() {
         })
         .sum::<usize>();
 
-    let sizes_of_dirs = elements
+    let mut sizes_of_dirs = elements
         .iter()
         .map(|element| match element {
             Element::File(_) => 0,
@@ -169,16 +172,33 @@ fn main() {
                     .sum();
             }
         })
-        .filter(|size| *size <= 100000 && *size > 0)
-        .sum::<usize>();
+        .collect::<Vec<usize>>();
 
     let first_part = if *size_of_root_dir <= 100000 {
-        size_of_root_dir + sizes_of_dirs
+        size_of_root_dir
+            + sizes_of_dirs
+                .iter()
+                .filter(|size| **size <= 100000 && **size > 0)
+                .sum::<usize>()
     } else {
         sizes_of_dirs
+            .iter()
+            .filter(|size| **size <= 100000 && **size > 0)
+            .sum::<usize>()
     };
 
-    let second_part = 1;
+    let free_space = DISK_SIZE - *size_of_root_dir as u32;
+    let left_to_delete = MIN_UNUSED_SIZE - free_space;
+
+    sizes_of_dirs.sort();
+
+    let second_part = sizes_of_dirs
+        .iter()
+        .filter(|size| **size >= left_to_delete as usize)
+        .nth(0)
+        .unwrap();
+
+    debug(left_to_delete);
 
     aoc.output(first_part, second_part);
 }
