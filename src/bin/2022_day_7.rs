@@ -1,6 +1,7 @@
-use std::fmt::Display;
+// THIS DAY DOES NOT WORK!
 
 use aoc::*;
+use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 struct Directory {
