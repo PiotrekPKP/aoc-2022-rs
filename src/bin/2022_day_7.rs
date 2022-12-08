@@ -9,7 +9,6 @@ struct Directory {
 #[derive(Debug, Clone)]
 struct File {
     parent: Option<String>,
-    name: String,
     size: usize,
 }
 
@@ -62,7 +61,6 @@ fn parse_input_to_commands(lines: &Vec<String>) -> Vec<Command> {
                     match parsed_first_part {
                         Ok(value) => TerminalString::Element(Element::File(File {
                             parent: None,
-                            name: name.to_string(),
                             size: value,
                         })),
                         Err(_) => TerminalString::Element(Element::Dir(Directory {
