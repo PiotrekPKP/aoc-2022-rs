@@ -55,8 +55,8 @@ impl AdventOfCode {
                 .on_bright_green()
                 .black()
         );
-        println!("First part:  {}", format!("{:?}", first_part).yellow());
-        println!("Second part: {}", format!("{:?}", second_part).yellow());
+        println!("First part:  {}", format!("{:#?}", first_part).yellow());
+        println!("Second part: {}", format!("{:#?}", second_part).yellow());
         println!();
     }
 }
@@ -66,5 +66,6 @@ where
     T: std::fmt::Debug,
 {
     println!("----- {}", "DEBUGGING".on_bright_red().black());
-    println!("{:?}", value);
+    println!("{:#?}", value);
+    println!();
 }
