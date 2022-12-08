@@ -1,13 +1,9 @@
-// THIS DAY DOES NOT WORK!
-
 use aoc::*;
-use std::fmt::Display;
 
 #[derive(Debug, Clone)]
 struct Directory {
     parent: Option<String>,
     name: String,
-    children: Vec<Element>,
 }
 
 #[derive(Debug, Clone)]
@@ -33,167 +29,6 @@ enum Command {
 enum TerminalString {
     Command(Command),
     Element(Element),
-}
-
-impl Directory {
-    fn root() -> Self {
-        Directory {
-            parent: None,
-            name: String::from("/"),
-            children: vec![],
-        }
-    }
-
-    fn populate(&mut self, elements: &Vec<Element>) {
-        elements.iter().for_each(|element| match element {
-            Element::Dir(dir) => {
-                let parent = dir.parent.clone().unwrap();
-                let parent = parent
-                    .split('/')
-                    .filter(|c| c != &"")
-                    .collect::<Vec<&str>>();
-
-                if parent.len() == 0 {
-                    self.children.push(Element::Dir(dir.clone()));
-                } else {
-                    let mut search_dir = self.clone();
-
-                    parent.iter().for_each(|parent_dir| {
-                        let the_dir = search_dir.children.iter().find(|d| match d {
-                            Element::File(_) => false,
-                            Element::Dir(d) => d.name.eq(parent_dir),
-                        });
-
-                        let new = if the_dir.is_none() {
-                            Directory {
-                                children: vec![],
-                                name: parent_dir.to_string(),
-                                parent: Some(String::from("/")),
-                            }
-                        } else {
-                            match the_dir.unwrap() {
-                                Element::Dir(d) => d.clone(),
-                                Element::File(_) => unreachable!(),
-                            }
-                        };
-
-                        search_dir = new.clone();
-                    });
-
-                    search_dir.children.push(Element::Dir(dir.clone()));
-
-                    self.children = self
-                        .children
-                        .iter()
-                        .filter(|element| match element {
-                            Element::File(_) => true,
-                            Element::Dir(d) => d.name != parent[0],
-                        })
-                        .map(|x| x.clone())
-                        .collect();
-
-                    self.children.push(Element::Dir(search_dir.clone()));
-                }
-            }
-            Element::File(file) => {
-                let parent = file.parent.clone().unwrap();
-                let parent = parent
-                    .split('/')
-                    .filter(|c| c != &"")
-                    .collect::<Vec<&str>>();
-
-                if parent.len() == 0 {
-                    self.children.push(Element::File(file.clone()));
-                } else {
-                    let mut search_dir = self.clone();
-
-                    parent.iter().enumerate().for_each(|(k, parent_dir)| {
-                        let the_dir = search_dir.children.iter().find(|d| match d {
-                            Element::File(_) => false,
-                            Element::Dir(d) => d.name.eq(parent_dir),
-                        });
-
-                        let new = if the_dir.is_none() {
-                            Directory {
-                                children: vec![],
-                                name: parent_dir.to_string(),
-                                parent: Some(String::from("/")),
-                            }
-                        } else {
-                            match the_dir.unwrap() {
-                                Element::Dir(d) => d.clone(),
-                                Element::File(_) => unreachable!(),
-                            }
-                        };
-
-                        search_dir = new.clone();
-
-                        if k == parent.len() - 1 {
-                            search_dir.children.push(Element::File(file.clone()));
-                        }
-                    });
-
-                    self.children = self
-                        .children
-                        .iter()
-                        .filter(|element| match element {
-                            Element::File(_) => true,
-                            Element::Dir(d) => d.name != parent[0],
-                        })
-                        .map(|x| x.clone())
-                        .collect();
-
-                    self.children.push(Element::Dir(search_dir.clone()));
-                }
-            }
-        });
-    }
-}
-
-impl Display for Directory {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let parents = self
-            .parent
-            .as_ref()
-            .unwrap_or(&String::from(""))
-            .split('/')
-            .filter(|c| c != &"")
-            .map(|_| "  ")
-            .collect::<String>();
-
-        writeln!(f, "{}- {} (dir)", parents, self.name).unwrap();
-
-        for element in &self.children {
-            match element {
-                Element::Dir(dir) => {
-                    let parents = dir
-                        .parent
-                        .as_ref()
-                        .unwrap_or(&String::from(""))
-                        .split('/')
-                        .filter(|c| c != &"")
-                        .map(|_| "  ")
-                        .collect::<String>();
-
-                    writeln!(f, "  {}{}", parents, dir).unwrap()
-                }
-                Element::File(file) => {
-                    let parents = file
-                        .parent
-                        .as_ref()
-                        .unwrap_or(&String::from(""))
-                        .split('/')
-                        .filter(|c| c != &"")
-                        .map(|_| "  ")
-                        .collect::<String>();
-
-                    writeln!(f, "  {}- {} (file, size={})", parents, file.name, file.size).unwrap()
-                }
-            }
-        }
-
-        Ok(())
-    }
 }
 
 fn parse_input_to_commands(lines: &Vec<String>) -> Vec<Command> {
@@ -230,7 +65,6 @@ fn parse_input_to_commands(lines: &Vec<String>) -> Vec<Command> {
                         Err(_) => TerminalString::Element(Element::Dir(Directory {
                             parent: None,
                             name: name.to_string(),
-                            children: vec![],
                         })),
                     }
                 }
@@ -299,15 +133,52 @@ fn main() {
         .flat_map(|x| x.clone())
         .collect::<Vec<Element>>();
 
-    let mut root_dir = Directory::root();
-    root_dir.populate(&elements);
+    let size_of_root_dir = &elements
+        .iter()
+        .map(|element| match element {
+            Element::Dir(_) => 0,
+            Element::File(file) => file.size,
+        })
+        .sum::<usize>();
 
-    debug(&root_dir);
-    println!("{}", &root_dir);
+    let sizes_of_dirs = elements
+        .iter()
+        .map(|element| match element {
+            Element::File(_) => 0,
+            Element::Dir(directory) => {
+                let directory_path = if directory.parent.as_ref().unwrap().len() == 1 {
+                    "/".to_string() + directory.name.as_str()
+                } else {
+                    directory.parent.as_ref().unwrap().clone() + "/" + directory.name.as_str()
+                };
 
-    let first_part = 1;
+                return elements
+                    .iter()
+                    .filter(|el| match el {
+                        Element::Dir(_) => false,
+                        Element::File(file) => file
+                            .parent
+                            .as_ref()
+                            .unwrap()
+                            .starts_with(directory_path.as_str()),
+                    })
+                    .map(|el| match el {
+                        Element::Dir(_) => 0,
+                        Element::File(file) => file.size,
+                    })
+                    .sum();
+            }
+        })
+        .filter(|size| *size <= 100000 && *size > 0)
+        .sum::<usize>();
 
-    let second_part = 2;
+    let first_part = if *size_of_root_dir <= 100000 {
+        size_of_root_dir + sizes_of_dirs
+    } else {
+        sizes_of_dirs
+    };
+
+    let second_part = 1;
 
     aoc.output(first_part, second_part);
 }
