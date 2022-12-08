@@ -198,7 +198,5 @@ fn main() {
         .nth(0)
         .unwrap();
 
-    debug(left_to_delete);
-
     aoc.output(first_part, second_part);
 }
