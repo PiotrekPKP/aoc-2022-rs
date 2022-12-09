@@ -138,9 +138,11 @@ impl Program {
     }
 }
 
+const TAIL_LENTGH: usize = 9;
+
 #[derive(Debug)]
 struct Program2 {
-    tail_pos: [Position; 9],
+    tail_pos: [Position; TAIL_LENTGH],
     head_pos: Position,
     tail_visited: HashSet<Position>,
 }
@@ -148,13 +150,13 @@ struct Program2 {
 impl Program2 {
     fn new() -> Self {
         Program2 {
-            tail_pos: [(0, 0); 9],
+            tail_pos: [(0, 0); TAIL_LENTGH],
             head_pos: (0, 0),
             tail_visited: HashSet::from_iter(vec![(0, 0)]),
         }
     }
 
-    fn is_adjacent(&self, index: u8) -> bool {
+    fn is_adjacent(&self, index: usize) -> bool {
         let next_block = if index == 0 {
             self.head_pos
         } else {
@@ -166,7 +168,7 @@ impl Program2 {
                 && (self.tail_pos[index as usize].1 - next_block.1).abs() < 2)
     }
 
-    fn get_new_pos(&self, index: u8) -> Position {
+    fn get_new_pos(&self, index: usize) -> Position {
         let next_block = if index == 0 {
             self.head_pos
         } else {
@@ -253,52 +255,52 @@ impl Program2 {
                     (1..=*a).for_each(|_| {
                         self.head_pos.1 += 1;
 
-                        (0..9).for_each(|i| {
+                        (0..TAIL_LENTGH).for_each(|i| {
                             let new_pos = self.get_new_pos(i);
 
                             self.tail_pos[i as usize] = new_pos;
                         });
 
-                        self.tail_visited.insert(self.tail_pos[8]);
+                        self.tail_visited.insert(self.tail_pos[TAIL_LENTGH - 1]);
                     });
                 }
                 Move::Down(a) => {
                     (1..=*a).for_each(|_| {
                         self.head_pos.1 -= 1;
 
-                        (0..9).for_each(|i| {
+                        (0..TAIL_LENTGH).for_each(|i| {
                             let new_pos = self.get_new_pos(i);
 
                             self.tail_pos[i as usize] = new_pos;
                         });
 
-                        self.tail_visited.insert(self.tail_pos[8]);
+                        self.tail_visited.insert(self.tail_pos[TAIL_LENTGH - 1]);
                     });
                 }
                 Move::Right(a) => {
                     (1..=*a).for_each(|_| {
                         self.head_pos.0 += 1;
 
-                        (0..9).for_each(|i| {
+                        (0..TAIL_LENTGH).for_each(|i| {
                             let new_pos = self.get_new_pos(i);
 
                             self.tail_pos[i as usize] = new_pos;
                         });
 
-                        self.tail_visited.insert(self.tail_pos[8]);
+                        self.tail_visited.insert(self.tail_pos[TAIL_LENTGH - 1]);
                     });
                 }
                 Move::Left(a) => {
                     (1..=*a).for_each(|_| {
                         self.head_pos.0 -= 1;
 
-                        (0..9).for_each(|i| {
+                        (0..TAIL_LENTGH).for_each(|i| {
                             let new_pos = self.get_new_pos(i);
 
                             self.tail_pos[i as usize] = new_pos;
                         });
 
-                        self.tail_visited.insert(self.tail_pos[8]);
+                        self.tail_visited.insert(self.tail_pos[TAIL_LENTGH - 1]);
                     });
                 }
             };
