@@ -167,11 +167,14 @@ fn main() {
         .flat_map(|x| x)
         .for_each(|line| {
             line.iter().for_each(|b| {
-                if *b {
-                    print!("{}", "  ".on_yellow())
-                } else {
-                    print!("  ")
-                }
+                print!(
+                    "{}",
+                    if *b {
+                        "  ".on_yellow()
+                    } else {
+                        "  ".on_black()
+                    }
+                )
             });
 
             println!();
