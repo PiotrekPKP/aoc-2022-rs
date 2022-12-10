@@ -77,7 +77,7 @@ impl GPUState {
 
         let column = self.current_cycle - 40 * row;
 
-        return (row, column);
+        return (row, column - 1);
     }
 }
 
@@ -149,15 +149,12 @@ fn main() {
 
             let (y, x) = state.get_current_pos();
 
-            state.screen[y as usize][x as usize - 1] =
-                (state.current_x - 1..=state.current_x + 1).contains(&(x as i32 - 1));
+            state.screen[y as usize][x as usize] =
+                (state.current_x - 1..=state.current_x + 1).contains(&(x as i32));
 
-            if state.current_cycle == 40
-                || state.current_cycle == 80
-                || state.current_cycle == 120
-                || state.current_cycle == 160
-                || state.current_cycle == 200
-                || state.current_cycle == 240
+            if state.current_cycle >= 40
+                && state.current_cycle <= 240
+                && state.current_cycle % 40 == 0
             {
                 return Some(Some(state.screen[y as usize]));
             }
