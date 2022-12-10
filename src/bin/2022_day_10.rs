@@ -99,15 +99,16 @@ fn main() {
                 state.current_x += next_x;
             }
 
-            state.next_x_modifier = None;
-            match action {
-                Action::Noop => {}
+            state.next_x_modifier = match action {
+                Action::Noop => None,
                 Action::AddX(v) => {
                     if let Some(v) = v {
-                        state.next_x_modifier = Some(v);
+                        Some(v)
+                    } else {
+                        None
                     }
                 }
-            }
+            };
 
             if state.current_cycle == 20
                 || state.current_cycle == 60
@@ -137,12 +138,13 @@ fn main() {
                 state.current_x += next_x;
             }
 
-            state.next_x_modifier = None;
-            match action {
-                Action::Noop => {}
+            state.next_x_modifier = match action {
+                Action::Noop => None,
                 Action::AddX(v) => {
                     if let Some(v) = v {
-                        state.next_x_modifier = Some(v);
+                        Some(v)
+                    } else {
+                        None
                     }
                 }
             };
