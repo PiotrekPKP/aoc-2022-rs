@@ -166,7 +166,7 @@ fn main() {
         .flat_map(|x| x)
         .for_each(|line| {
             line.iter()
-                .for_each(|b| if *b { print!("#") } else { print!(" ") });
+                .for_each(|b| if *b { print!("##") } else { print!("  ") });
 
             println!();
         });
