@@ -126,7 +126,7 @@ fn main() {
         .flat_map(|x| x)
         .sum::<i32>();
 
-    let second_part = input
+    input
         .iter()
         .flat_map(|l| l.parse::<Action>())
         .flat_map(|action| match action {
@@ -177,5 +177,5 @@ fn main() {
             println!();
         });
 
-    aoc.output(first_part, second_part);
+    aoc.output(first_part, "Check out this text ^^");
 }
