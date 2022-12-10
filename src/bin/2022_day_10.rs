@@ -1,4 +1,5 @@
 use aoc::*;
+use colored::Colorize;
 use std::str::FromStr;
 
 #[derive(Debug)]
@@ -165,8 +166,13 @@ fn main() {
         })
         .flat_map(|x| x)
         .for_each(|line| {
-            line.iter()
-                .for_each(|b| if *b { print!("##") } else { print!("  ") });
+            line.iter().for_each(|b| {
+                if *b {
+                    print!("{}", "  ".on_yellow())
+                } else {
+                    print!("  ")
+                }
+            });
 
             println!();
         });
