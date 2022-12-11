@@ -175,7 +175,7 @@ fn main() {
 
     let global_mod = monkeys.iter().fold(1, |a, b| a * b.test.divisible_by);
 
-    (0..ROUND_AMOUNT2).for_each(|r| {
+    (0..ROUND_AMOUNT2).for_each(|_| {
         monkeys.iter_mut().for_each(|monkey| {
             let mut items = monkey_items.get(&monkey.id).unwrap().clone();
 
