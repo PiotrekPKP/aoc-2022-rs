@@ -118,7 +118,7 @@ impl Monkey {
 fn main() {
     let aoc = AdventOfCode::new(11, 2022);
 
-    let input = &aoc.test_content.as_ref().unwrap();
+    let input = &aoc.content;
 
     let mut monkeys = input
         .split("\n\n")
@@ -126,37 +126,59 @@ fn main() {
         .collect::<Vec<Monkey>>();
 
     let mut monkey_items = HashMap::<u8, Vec<u32>>::new();
-    monkeys.iter().for_each(|m| {
+    monkeys.iter_mut().for_each(|m| {
+        m.starting_items.reverse();
         monkey_items.insert(m.id, m.starting_items.clone());
     });
 
-    (0..ROUND_AMOUNT).for_each(|r| {
+    (0..ROUND_AMOUNT).for_each(|_| {
         monkeys.iter_mut().for_each(|monkey| {
-            let items = monkey_items.get(&monkey.id).unwrap().clone();
+            let mut items = monkey_items.get(&monkey.id).unwrap().clone();
 
-            items.iter().enumerate().for_each(|(k, worry_level)| {
-                let new_value = monkey.run_op(*worry_level) / 3;
+            while let Some(worry_level) = items.pop() {
+                let new_value = monkey.run_op(worry_level) / 3;
                 let pass_to = monkey.test.run(new_value);
 
-                let mut items_without_worry_level = items.clone();
-                items_without_worry_level.remove(k);
-
-                if r < 2 {
-                    debug(&items_without_worry_level);
-                }
-
-                monkey_items
-                    .insert(monkey.id, items_without_worry_level)
-                    .unwrap();
-
+                monkey_items.insert(monkey.id, items.clone());
                 monkey_items.get_mut(&pass_to).unwrap().push(new_value);
-            });
+            }
         });
     });
 
-    let first_part = monkeys;
+    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u32>>();
+    iterations.sort_by(|a, b| b.cmp(a));
 
-    let second_part = 2;
+    let first_part = iterations[0] * iterations[1];
+
+    let mut monkeys = input
+        .split("\n\n")
+        .flat_map(|monkey_str| monkey_str.parse::<Monkey>())
+        .collect::<Vec<Monkey>>();
+
+    let mut monkey_items = HashMap::<u8, Vec<u32>>::new();
+    monkeys.iter_mut().for_each(|m| {
+        m.starting_items.reverse();
+        monkey_items.insert(m.id, m.starting_items.clone());
+    });
+
+    (0..ROUND_AMOUNT).for_each(|_| {
+        monkeys.iter_mut().for_each(|monkey| {
+            let mut items = monkey_items.get(&monkey.id).unwrap().clone();
+
+            while let Some(worry_level) = items.pop() {
+                let new_value = monkey.run_op(worry_level);
+                let pass_to = monkey.test.run(new_value);
+
+                monkey_items.insert(monkey.id, items.clone());
+                monkey_items.get_mut(&pass_to).unwrap().push(new_value);
+            }
+        });
+    });
+
+    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u32>>();
+    iterations.sort_by(|a, b| b.cmp(a));
+
+    let second_part = iterations[0] * iterations[1];
 
     aoc.output(first_part, second_part);
 }
