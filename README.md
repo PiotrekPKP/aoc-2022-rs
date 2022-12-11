@@ -9,7 +9,6 @@ Remember to add your session cookie in `.env` file.
 ```
 
 ### Using the runner
-Remember to add your session cookie in `.env` file.
 ```sh
 ./run <DAY> [YEAR]
 ```
