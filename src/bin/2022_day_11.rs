@@ -1,12 +1,13 @@
 use aoc::*;
-use std::{collections::HashMap, fmt::format, str::FromStr};
+use std::{collections::HashMap, str::FromStr};
 
-const ROUND_AMOUNT: u8 = 20;
+const ROUND_AMOUNT1: u8 = 20;
+const ROUND_AMOUNT2: u128 = 10_000;
 const OLD_KEYWORD: &str = "old";
 
 #[derive(Debug)]
 struct Test {
-    divisible_by: u32,
+    divisible_by: u128,
     pass: u8,
     fail: u8,
 }
@@ -21,7 +22,12 @@ impl FromStr for Test {
         let pass_line = lines.next().unwrap();
         let fail_line = lines.next().unwrap();
 
-        let divisible_by = test_line.split(" ").last().unwrap().parse::<u32>().unwrap();
+        let divisible_by = test_line
+            .split(" ")
+            .last()
+            .unwrap()
+            .parse::<u128>()
+            .unwrap();
         let pass = pass_line.split(" ").last().unwrap().parse::<u8>().unwrap();
         let fail = fail_line.split(" ").last().unwrap().parse::<u8>().unwrap();
 
@@ -34,7 +40,7 @@ impl FromStr for Test {
 }
 
 impl Test {
-    fn run(&self, value: u32) -> u8 {
+    fn run(&self, value: u128) -> u8 {
         if value % self.divisible_by == 0 {
             self.pass
         } else {
@@ -46,10 +52,10 @@ impl Test {
 #[derive(Debug)]
 struct Monkey {
     id: u8,
-    starting_items: Vec<u32>,
+    starting_items: Vec<u128>,
     operation: String,
     test: Test,
-    iterations: u32,
+    iterations: u128,
 }
 
 impl FromStr for Monkey {
@@ -69,7 +75,7 @@ impl FromStr for Monkey {
         let items = items
             .split(", ")
             .flat_map(|x| x.parse())
-            .collect::<Vec<u32>>();
+            .collect::<Vec<u128>>();
 
         let (_, operation) = operation_line.split_once("Operation: new = ").unwrap();
 
@@ -87,7 +93,7 @@ impl FromStr for Monkey {
 }
 
 impl Monkey {
-    fn run_op(&mut self, value: u32) -> u32 {
+    fn run_op(&mut self, value: u128) -> u128 {
         let mut op = self.operation.split(" ");
 
         let left_side = op.next().unwrap();
@@ -97,12 +103,13 @@ impl Monkey {
         let left_side = if left_side == OLD_KEYWORD {
             value
         } else {
-            left_side.parse::<u32>().unwrap()
+            left_side.parse::<u128>().unwrap()
         };
+
         let right_side = if right_side == OLD_KEYWORD {
             value
         } else {
-            right_side.parse::<u32>().unwrap()
+            right_side.parse::<u128>().unwrap()
         };
 
         self.iterations += 1;
@@ -125,13 +132,13 @@ fn main() {
         .flat_map(|monkey_str| monkey_str.parse::<Monkey>())
         .collect::<Vec<Monkey>>();
 
-    let mut monkey_items = HashMap::<u8, Vec<u32>>::new();
+    let mut monkey_items = HashMap::<u8, Vec<u128>>::new();
     monkeys.iter_mut().for_each(|m| {
         m.starting_items.reverse();
         monkey_items.insert(m.id, m.starting_items.clone());
     });
 
-    (0..ROUND_AMOUNT).for_each(|_| {
+    (0..ROUND_AMOUNT1).for_each(|_| {
         monkeys.iter_mut().for_each(|monkey| {
             let mut items = monkey_items.get(&monkey.id).unwrap().clone();
 
@@ -145,28 +152,35 @@ fn main() {
         });
     });
 
-    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u32>>();
+    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u128>>();
     iterations.sort_by(|a, b| b.cmp(a));
 
-    let first_part = iterations[0] * iterations[1];
+    let first_part = format!(
+        "{} * {} = {}",
+        iterations[0],
+        iterations[1],
+        iterations[0] * iterations[1]
+    );
 
     let mut monkeys = input
         .split("\n\n")
         .flat_map(|monkey_str| monkey_str.parse::<Monkey>())
         .collect::<Vec<Monkey>>();
 
-    let mut monkey_items = HashMap::<u8, Vec<u32>>::new();
+    let mut monkey_items = HashMap::<u8, Vec<u128>>::new();
     monkeys.iter_mut().for_each(|m| {
         m.starting_items.reverse();
         monkey_items.insert(m.id, m.starting_items.clone());
     });
 
-    (0..ROUND_AMOUNT).for_each(|_| {
+    let global_mod = monkeys.iter().fold(1, |a, b| a * b.test.divisible_by);
+
+    (0..ROUND_AMOUNT2).for_each(|r| {
         monkeys.iter_mut().for_each(|monkey| {
             let mut items = monkey_items.get(&monkey.id).unwrap().clone();
 
             while let Some(worry_level) = items.pop() {
-                let new_value = monkey.run_op(worry_level);
+                let new_value = monkey.run_op(worry_level) % global_mod;
                 let pass_to = monkey.test.run(new_value);
 
                 monkey_items.insert(monkey.id, items.clone());
@@ -175,10 +189,15 @@ fn main() {
         });
     });
 
-    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u32>>();
+    let mut iterations = monkeys.iter().map(|m| m.iterations).collect::<Vec<u128>>();
     iterations.sort_by(|a, b| b.cmp(a));
 
-    let second_part = iterations[0] * iterations[1];
+    let second_part = format!(
+        "{} * {} = {}",
+        iterations[0],
+        iterations[1],
+        iterations[0] * iterations[1]
+    );
 
     aoc.output(first_part, second_part);
 }
