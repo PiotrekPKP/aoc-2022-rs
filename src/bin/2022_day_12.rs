@@ -5,7 +5,6 @@ fn main() {
     let aoc = AdventOfCode::new(12, 2022);
 
     let input = &aoc.content;
-    //let input = &aoc.test_content.as_ref().unwrap();
 
     let mut starting_pos = (0, 0);
     let mut finish_pos = (0, 0);
@@ -119,8 +118,6 @@ fn main() {
         .collect::<Vec<u32>>();
 
     second_part.sort();
-
-    debug(&second_part);
 
     aoc.output(first_part, second_part.first().unwrap());
 }
