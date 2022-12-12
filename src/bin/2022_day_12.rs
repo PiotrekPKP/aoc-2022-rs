@@ -68,7 +68,7 @@ fn main() {
 
     let first_part = count;
 
-    let mut second_part = board
+    let second_part = board
         .iter()
         .enumerate()
         .flat_map(|(y, line)| {
@@ -115,9 +115,8 @@ fn main() {
                 .map(|x| x.1)
                 .collect::<Vec<u32>>()
         })
-        .collect::<Vec<u32>>();
+        .min()
+        .unwrap();
 
-    second_part.sort();
-
-    aoc.output(first_part, second_part.first().unwrap());
+    aoc.output(first_part, second_part);
 }
