@@ -20,6 +20,7 @@ dependencies = [
  "fancy-regex",
  "md5",
  "pathfinding",
+ "regex",
  "reqwest",
 ]
 
