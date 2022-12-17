@@ -1,5 +1,5 @@
 use aoc::*;
-use regex::Regex;
+use std::str::Chars;
 
 #[derive(Debug)]
 enum Element {
@@ -7,40 +7,172 @@ enum Element {
     Array(Vec<Element>),
 }
 
-fn parse_element(str: &str) -> Element {
-    debug(str);
-    Element::Array(vec![])
+fn parse_string(s: &mut Chars) -> Vec<Element> {
+    let mut elements = Vec::new();
+    let mut buffer = String::new();
+
+    while let Some(c) = s.next() {
+        match c {
+            c if c.is_digit(10) => buffer.push(c),
+            ',' => {
+                if !buffer.is_empty() {
+                    elements.push(Element::Number(buffer.parse().unwrap()));
+                    buffer.clear();
+                }
+            }
+            '[' => elements.push(Element::Array(parse_string(s))),
+            ']' => {
+                if !buffer.is_empty() {
+                    elements.push(Element::Number(buffer.parse().unwrap()));
+                    buffer.clear();
+                }
+
+                return elements;
+            }
+            _ => (),
+        }
+    }
+
+    if !buffer.is_empty() {
+        elements.push(Element::Number(buffer.parse().unwrap()));
+    }
+
+    elements
 }
 
-fn split_string(str: &str) -> Vec<&str> {
-    let re = Regex::new(r",([^\[\]]*\])").unwrap();
-    return re.split(str).collect();
+fn check_order(pair: &(&Element, &Element)) -> bool {
+    let mut flag = false;
+
+    debug(format!("Checking {:?}", pair));
+
+    match pair {
+        (Element::Number(a), Element::Number(b)) => {
+            if b < a {
+                flag = true;
+            }
+        }
+        (Element::Number(a), Element::Array(b)) => {
+            let a_arr = vec![Element::Number(*a)];
+
+            let mut f = false;
+
+            a_arr.iter().enumerate().for_each(|(i, a_elem)| {
+                if i >= b.len() {
+                    return;
+                } else {
+                    f = if f {
+                        true
+                    } else {
+                        check_order(&(a_elem, &b[i]))
+                    };
+                }
+            });
+
+            flag = if flag { true } else { f };
+        }
+        (Element::Array(a), Element::Number(b)) => {
+            let b_arr = vec![Element::Number(*b)];
+
+            let mut f = false;
+
+            a.iter().enumerate().for_each(|(i, a_elem)| {
+                if i >= b_arr.len() {
+                    return;
+                } else {
+                    f = if f {
+                        true
+                    } else {
+                        check_order(&(a_elem, &b_arr[i]))
+                    };
+                }
+            });
+
+            flag = if flag { true } else { f };
+        }
+        (Element::Array(a), Element::Array(b)) => {
+            let mut f = false;
+
+            a.iter().enumerate().for_each(|(i, a_elem)| {
+                if i >= b.len() {
+                    if i == a.len() - 1 {
+                        f = true;
+                    }
+                } else {
+                    f = if f {
+                        true
+                    } else {
+                        check_order(&(a_elem, &b[i]))
+                    };
+                }
+            });
+
+            flag = if flag { true } else { f };
+        }
+    }
+
+    return flag;
 }
 
 fn main() {
     let aoc = AdventOfCode::new(13, 2022);
 
-    let elements = split_string("[1],[2,3,4],1,3,[2,[3],4,5],[[],[[]]]");
-    let mut result = Vec::new();
-    for element in elements {
-        if element.starts_with("[") && element.ends_with("]") {
-            let inner_elements = element[1..element.len() - 1]
-                .split(",")
-                .collect::<Vec<&str>>();
-            let mut inner_result = Vec::new();
-            for inner_element in inner_elements {
-                let parsed_inner_element = parse_element(inner_element);
-                inner_result.push(parsed_inner_element);
-            }
-            result.push(Element::Array(inner_result));
-        } else {
-            debug(element);
-            let parsed_number = element.parse::<i32>().unwrap();
-            result.push(Element::Number(parsed_number));
-        }
-    }
+    let input = &aoc.content;
 
-    let first_part = "[[1],[2,3,4],1,3,[2,[3],4,5],[[],[[]]]]";
+    let parsed_groups = input
+        .split("\n\n")
+        .map(|group| {
+            let mut objects = group.lines();
+
+            let first_str = objects.next().unwrap();
+            let mut first_chars = first_str[1..first_str.len() - 1].chars();
+
+            let second_str = objects.next().unwrap();
+            let mut second_chars = second_str[1..second_str.len() - 1].chars();
+
+            let first = parse_string(&mut first_chars);
+            let second = parse_string(&mut second_chars);
+
+            (first, second)
+        })
+        .collect::<Vec<(Vec<Element>, Vec<Element>)>>();
+
+    let sum = &parsed_groups
+        .iter()
+        .enumerate()
+        .flat_map(|(i, (a, b))| {
+            let mut flag = false;
+
+            a.iter().enumerate().for_each(|(j, a_element)| {
+                if j >= b.len() {
+                    if j == a.len() - 1 {
+                        flag = true;
+                    }
+                } else {
+                    let b_element = &b[j];
+
+                    flag = if flag {
+                        true
+                    } else {
+                        check_order(&(a_element, b_element))
+                    };
+                }
+            });
+
+            debug(format!(
+                "Order for pair {} is {}",
+                i + 1,
+                if flag { "incorrect" } else { "correct" }
+            ));
+
+            if flag {
+                None
+            } else {
+                Some(i + 1)
+            }
+        })
+        .sum::<usize>();
+
+    let first_part = &parsed_groups;
 
     let second_part = 2;
 
