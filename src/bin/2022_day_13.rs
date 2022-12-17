@@ -43,11 +43,9 @@ fn parse_string(s: &mut Chars) -> Vec<Element> {
 fn check_order(pair: &(&Element, &Element)) -> bool {
     let mut flag = false;
 
-    debug(format!("Checking {:?}", pair));
-
     match pair {
         (Element::Number(a), Element::Number(b)) => {
-            if b < a {
+            if a > b {
                 flag = true;
             }
         }
@@ -56,57 +54,49 @@ fn check_order(pair: &(&Element, &Element)) -> bool {
 
             let mut f = false;
 
-            a_arr.iter().enumerate().for_each(|(i, a_elem)| {
-                if i >= b.len() {
-                    return;
-                } else {
-                    f = if f {
-                        true
-                    } else {
-                        check_order(&(a_elem, &b[i]))
-                    };
+            for (i, a_elem) in a_arr.iter().enumerate() {
+                if i < b.len() {
+                    if check_order(&(a_elem, &b[i])) {
+                        f = true;
+                        break;
+                    }
                 }
-            });
+            }
 
-            flag = if flag { true } else { f };
+            flag = f;
         }
         (Element::Array(a), Element::Number(b)) => {
             let b_arr = vec![Element::Number(*b)];
 
             let mut f = false;
 
-            a.iter().enumerate().for_each(|(i, a_elem)| {
-                if i >= b_arr.len() {
-                    return;
-                } else {
-                    f = if f {
-                        true
-                    } else {
-                        check_order(&(a_elem, &b_arr[i]))
-                    };
+            for (i, a_elem) in a.iter().enumerate() {
+                if i < b_arr.len() {
+                    if check_order(&(a_elem, &b_arr[i])) {
+                        f = true;
+                        break;
+                    }
                 }
-            });
+            }
 
-            flag = if flag { true } else { f };
+            flag = f;
         }
         (Element::Array(a), Element::Array(b)) => {
             let mut f = false;
 
-            a.iter().enumerate().for_each(|(i, a_elem)| {
+            for (i, a_elem) in a.iter().enumerate() {
                 if i >= b.len() {
-                    if i == a.len() - 1 {
-                        f = true;
-                    }
-                } else {
-                    f = if f {
-                        true
-                    } else {
-                        check_order(&(a_elem, &b[i]))
-                    };
+                    f = true;
+                    break;
                 }
-            });
 
-            flag = if flag { true } else { f };
+                if check_order(&(a_elem, &b[i])) {
+                    f = true;
+                    break;
+                }
+            }
+
+            flag = f;
         }
     }
 
@@ -117,17 +107,15 @@ fn main() {
     let aoc = AdventOfCode::new(13, 2022);
 
     let input = &aoc.content;
+    //let input = &aoc.test_content.as_ref().unwrap();
 
     let parsed_groups = input
         .split("\n\n")
         .map(|group| {
             let mut objects = group.lines();
 
-            let first_str = objects.next().unwrap();
-            let mut first_chars = first_str[1..first_str.len() - 1].chars();
-
-            let second_str = objects.next().unwrap();
-            let mut second_chars = second_str[1..second_str.len() - 1].chars();
+            let mut first_chars = objects.next().unwrap().chars();
+            let mut second_chars = objects.next().unwrap().chars();
 
             let first = parse_string(&mut first_chars);
             let second = parse_string(&mut second_chars);
@@ -142,21 +130,17 @@ fn main() {
         .flat_map(|(i, (a, b))| {
             let mut flag = false;
 
-            a.iter().enumerate().for_each(|(j, a_element)| {
+            for (j, a_element) in a.iter().enumerate() {
                 if j >= b.len() {
-                    if j == a.len() - 1 {
-                        flag = true;
-                    }
-                } else {
-                    let b_element = &b[j];
-
-                    flag = if flag {
-                        true
-                    } else {
-                        check_order(&(a_element, b_element))
-                    };
+                    flag = true;
+                    break;
                 }
-            });
+
+                if check_order(&(a_element, &b[j])) {
+                    flag = true;
+                    break;
+                }
+            }
 
             debug(format!(
                 "Order for pair {} is {}",
@@ -167,12 +151,12 @@ fn main() {
             if flag {
                 None
             } else {
-                Some(i + 1)
+                Some(i as i32 + 1)
             }
         })
-        .sum::<usize>();
+        .sum::<i32>();
 
-    let first_part = &parsed_groups;
+    let first_part = &sum;
 
     let second_part = 2;
 
